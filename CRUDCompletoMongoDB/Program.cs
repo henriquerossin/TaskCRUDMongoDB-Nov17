@@ -1,68 +1,41 @@
-﻿using CRUDCompletoMongoDB.Entities;
-using MongoDB.Driver;
+﻿using CRUDCompletoMongoDB.Repositories;
 
 namespace CRUDCompletoMongoDB
 {
     internal class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
-            var client = new MongoClient("mongodb://localhost:27017");
+            BookRepository book = new BookRepository();
+            AuthorRepository author = new AuthorRepository();
 
-            var database = client.GetDatabase("TaskCRUDMongoDB");
+            int num = 0;
 
-            var collectionAuthors = database.GetCollection<Author>("Authors");
-
-            var collectionBooks = database.GetCollection<Book>("Books");
-
-            // CRUD -> CREATE:
-
-            // InsertOne
-            var author = new Author("Stephen King", "United States");
-
-            collectionAuthors.InsertOne(author);
-
-            // InsertMany
-            var authors = new List<Author>
+            do
             {
-                new("Maria", "senha1"),
-                new("João", "senha2")
-            };
+                Console.WriteLine("---Books and Authors---");
+                Console.WriteLine("1 - Author's Menu");
+                Console.WriteLine("2 - Book's Menu");
+                Console.WriteLine("3 - Exit");
+                num = int.Parse(Console.ReadLine()!);
 
-            collectionAuthors.InsertMany(authors);
-            
-            // CRUD -> READ 
-            
-            // Read One
-            var usuario = collectionAuthors.Find(x => x.Name == "Stephen King").FirstOrDefault();
-
-            // Read Many
-            var authorsList = collectionAuthors.Find(x => true).ToList();
-
-            foreach (var aut in authorsList)
-            {
-                Console.WriteLine(aut);
-                Console.WriteLine("---");
+                switch (num)
+                {
+                    case 1:
+                        await author.AuthorMenu();
+                        break;
+                    case 2:
+                        await book.BookMenu();
+                        break;
+                    case 3:
+                        Console.WriteLine("Closing System. Thank you!");
+                        break;
+                    default:
+                        Console.WriteLine("Invalid option, try again.");
+                        break;
+                }
             }
-
-            //// CRUD - UPDATE (Usando Replace)
-
-            //// -- Busca de objetos por parâmetro, FirstOrDefault pega a primeira ocorrencia.
-            //var usuario = collection.Find(x => x.Id == "69173991c372800405907965").FirstOrDefault();
-
-            //// -- Troca informações do usuário na aplicação, precisa empurrar as mudanças para o banco
-            //usuario.Password = "456@mudar";
-
-            //// -- Empurra as mudanças feitas na aplicacao para o banco com REPLACE, o que não foi mudado, volta para o usuário normalmente.
-            //collection.ReplaceOne(x => x.Id == usuario.Id, usuario); 
-            
-            // CRUD - UPDATE (Usando Update)
-
-            collectionAuthors.UpdateOne(x => x.Id == "69173991c372800405907965",Builders<Author>.Update.Set(x => x.Country, "Nárnia"));
-
-            // CRUD - DELETE
-            
-            collectionAuthors.DeleteOne(x => x.Id == "69173991c372800405907965");
+            while (num != 3);
         }
     }
 }
