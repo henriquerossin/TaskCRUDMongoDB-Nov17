@@ -82,10 +82,21 @@ namespace CRUDCompletoMongoDB.Repositories
             Console.Write("Insert the Author's name: ");
             var name = Console.ReadLine()!;
 
+            var pointer = await _collectionAuthors.FindAsync(x => x.Name == name);
+            var author = await pointer.FirstOrDefaultAsync();
+
+            if (author == null)
+            {
+                Console.WriteLine("Author not found.");
+                return;
+            }
+
             Console.Write("Insert the new Author's country: ");
             var countryName = Console.ReadLine()!;
 
             await _collectionAuthors.UpdateOneAsync(x => x.Name == name, Builders<Author>.Update.Set(x => x.Country, countryName));
+
+            Console.WriteLine("Author updated successfully.");
         }
 
         public async Task DeleteAuthor()
@@ -93,7 +104,19 @@ namespace CRUDCompletoMongoDB.Repositories
             Console.Write("Insert the Author that will be deleted: ");
             var name = Console.ReadLine()!;
 
-            await _collectionAuthors.DeleteOneAsync(x => x.Name == name);
+            var pointer = await _collectionAuthors.FindAsync(x => x.Name == name);
+            var author = await pointer.FirstOrDefaultAsync();
+
+            if (author == null)
+            {
+                Console.WriteLine("Author not found.");
+                return;
+            }
+            else
+            {
+                Console.WriteLine($"Author {author.Name} deleted successfully.");
+                await _collectionAuthors.DeleteOneAsync(x => x.Name == name);
+            }
         }
 
         public async Task AuthorMenu()

@@ -1,5 +1,6 @@
 ﻿using CRUDCompletoMongoDB.Entities;
 using MongoDB.Driver;
+using System.Xml.Linq;
 
 namespace CRUDCompletoMongoDB.Repositories
 {
@@ -94,10 +95,21 @@ namespace CRUDCompletoMongoDB.Repositories
             Console.Write("Enter the Book's title: ");
             var title = Console.ReadLine()!;
 
+            var pointer = await _collectionBooks.FindAsync(x => x.Title == title);
+            var book = await pointer.FirstOrDefaultAsync();
+
+            if (book == null)
+            {
+                Console.WriteLine("Book not found.");
+                return;
+            }
+
             Console.Write("Enter the new Book's title: ");
             var newName = Console.ReadLine()!;
 
             await _collectionBooks.UpdateOneAsync(x => x.Title == title, Builders<Book>.Update.Set(x => x.Title, newName));
+
+            Console.WriteLine("Book updated successfully.");
         }
 
         public async Task DeleteBook()
@@ -105,7 +117,19 @@ namespace CRUDCompletoMongoDB.Repositories
             Console.Write("Enter the Book to be deleted: ");
             var title = Console.ReadLine()!;
 
-            await _collectionBooks.DeleteOneAsync(x => x.Title == title);
+            var pointer = await _collectionBooks.FindAsync(x => x.Title == title);
+            var book = await pointer.FirstOrDefaultAsync();
+
+            if (book == null)
+            {
+                Console.WriteLine("Book not found.");
+                return;
+            }
+            else
+            {
+                Console.WriteLine($"Book {book.Title} deleted successfully.");
+                await _collectionBooks.DeleteOneAsync(x => x.Title == title);
+            }
         }
 
         public async Task BookMenu()
