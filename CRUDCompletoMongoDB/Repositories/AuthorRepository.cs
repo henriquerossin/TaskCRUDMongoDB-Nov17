@@ -13,20 +13,20 @@ namespace CRUDCompletoMongoDB.Repositories
 
             var database = client.GetDatabase("TaskCRUDMongoDB");
 
-            var collectionAuthors = database.GetCollection<Author>("Authors");
+            _collectionAuthors = database.GetCollection<Author>("Authors");
         }
 
-        public void AddAuthor()
+        public async Task AddAuthor()
         {
             Console.Write("Insert the Author's name: ");
             var name = Console.ReadLine()!;
             Console.Write("Insert the Author's Country");
             var country = Console.ReadLine()!;
 
-            _collectionAuthors.InsertOne(new Author(name,country));
+            await _collectionAuthors.InsertOneAsync(new Author(name,country));
         }
 
-        public void AddAuthors()
+        public async Task AddAuthors()
         {
             Console.Write("How many authors will be added: ");
             var num = int.Parse(Console.ReadLine()!);
@@ -44,23 +44,30 @@ namespace CRUDCompletoMongoDB.Repositories
                 authors.Add(new Author(name, country));
             }
 
-            _collectionAuthors.InsertMany(authors);
+            await _collectionAuthors.InsertManyAsync(authors);
         }
 
-        public Author GetAuthor()
+        public async Task<Author> GetAuthor()
         {
             Console.Write("Insert the Author's name: ");
             var name = Console.ReadLine()!;
 
-            return _collectionAuthors.Find(x => x.Name == name).FirstOrDefault();
+            var pointer = await _collectionAuthors.FindAsync(x => x.Name == name);
+
+            var author = await pointer.FirstOrDefaultAsync();
+
+            return author;
         }
 
-        public List<Author> GetAuthors()
+        public async Task<List<Author>> GetAuthors()
         {
-            return _collectionAuthors.Find(a => true).ToList();
+            var pointer = await _collectionAuthors.FindAsync(a => true);
+            var authors = await pointer.ToListAsync();
+
+            return authors;
         }
 
-        public void UpdateAuthor()
+        public async Task UpdateAuthor()
         {
             Console.Write("Insert the Author's name: ");
             var name = Console.ReadLine()!;
@@ -68,18 +75,18 @@ namespace CRUDCompletoMongoDB.Repositories
             Console.Write("Insert the new Author's country: ");
             var countryName = Console.ReadLine()!;
 
-            _collectionAuthors.UpdateOne(x => x.Name == name, Builders<Author>.Update.Set(x => x.Country, countryName));
+            await _collectionAuthors.UpdateOneAsync(x => x.Name == name, Builders<Author>.Update.Set(x => x.Country, countryName));
         }
 
-        public void DeleteAuthor()
+        public async Task DeleteAuthor()
         {
             Console.Write("Insert the Author that will be deleted: ");
             var name = Console.ReadLine()!;
 
-            _collectionAuthors.DeleteOne(x => x.Name == name);
+            await _collectionAuthors.DeleteOneAsync(x => x.Name == name);
         }
 
-        public void AuthorMenu()
+        public async Task AuthorMenu()
         {
             int num = 0;
 
@@ -93,26 +100,27 @@ namespace CRUDCompletoMongoDB.Repositories
                 Console.WriteLine("5 - Update one Author: ");
                 Console.WriteLine("6 - Delete one Author: ");
                 Console.WriteLine("7 - Leave.");
+                num = int.Parse(Console.ReadLine()!);
 
                 switch (num)
                 {
                     case 1:
-                        AddAuthor();
+                        await AddAuthor();
                         break;
                     case 2:
-                        AddAuthors();
+                        await AddAuthors();
                         break;
                     case 3:
-                        GetAuthor();
+                        await GetAuthor();
                         break;
                     case 4:
-                        GetAuthors();
+                        await GetAuthors();
                         break;
                     case 5:
-                        UpdateAuthor();
+                        await UpdateAuthor();
                         break;
                     case 6:
-                        DeleteAuthor();
+                        await DeleteAuthor();
                         break;
                     case 7:
                         Console.WriteLine("Closing system.");
