@@ -74,6 +74,7 @@ namespace CRUDCompletoMongoDB.Repositories
             var pointer = await _collectionBooks.FindAsync(x => x.Title == title);
 
             var book = await pointer.FirstOrDefaultAsync();
+            Console.WriteLine(book);
 
             return book;
         }
@@ -82,6 +83,7 @@ namespace CRUDCompletoMongoDB.Repositories
         {
             var pointer = await _collectionBooks.FindAsync(a => true);
             var books = await pointer.ToListAsync();
+            Console.WriteLine(books);
 
             return books;
         }

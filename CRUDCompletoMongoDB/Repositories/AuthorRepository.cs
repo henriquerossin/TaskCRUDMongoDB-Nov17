@@ -56,6 +56,8 @@ namespace CRUDCompletoMongoDB.Repositories
 
             var author = await pointer.FirstOrDefaultAsync();
 
+            Console.WriteLine(author);
+
             return author;
         }
 
@@ -63,6 +65,8 @@ namespace CRUDCompletoMongoDB.Repositories
         {
             var pointer = await _collectionAuthors.FindAsync(a => true);
             var authors = await pointer.ToListAsync();
+
+            Console.WriteLine(authors);
 
             return authors;
         }
