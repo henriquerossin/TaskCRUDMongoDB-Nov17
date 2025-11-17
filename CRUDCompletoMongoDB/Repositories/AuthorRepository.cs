@@ -20,7 +20,7 @@ namespace CRUDCompletoMongoDB.Repositories
         {
             Console.Write("Insert the Author's name: ");
             var name = Console.ReadLine()!;
-            Console.Write("Insert the Author's Country");
+            Console.Write("Insert the Author's Country: ");
             var country = Console.ReadLine()!;
 
             await _collectionAuthors.InsertOneAsync(new Author(name,country));
@@ -37,7 +37,7 @@ namespace CRUDCompletoMongoDB.Repositories
             {
                 Console.Write("Insert the Author's name: ");
                 var name = Console.ReadLine()!;
-                Console.WriteLine("Insert the Author's Country");
+                Console.WriteLine("Insert the Author's Country: ");
                 var country = Console.ReadLine()!;
                 Console.WriteLine();
 
@@ -66,7 +66,13 @@ namespace CRUDCompletoMongoDB.Repositories
             var pointer = await _collectionAuthors.FindAsync(a => true);
             var authors = await pointer.ToListAsync();
 
-            Console.WriteLine(authors);
+            Console.WriteLine("---Authors---");
+
+            foreach (var author in authors)
+            {
+                Console.WriteLine(author);
+                Console.WriteLine("---");
+            }
 
             return authors;
         }

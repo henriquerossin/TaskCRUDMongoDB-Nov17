@@ -21,12 +21,6 @@ namespace CRUDCompletoMongoDB.Repositories
         public async Task ShowAuthors()
         {
             var authors = await _authorRep.GetAuthors();
-            Console.WriteLine("Authors list: ");
-            foreach (var aut in authors)
-            {
-                Console.WriteLine($"ID: {aut.Id} | Name: {aut.Name}");
-            }
-
             Console.WriteLine();
         }
 
@@ -83,7 +77,14 @@ namespace CRUDCompletoMongoDB.Repositories
         {
             var pointer = await _collectionBooks.FindAsync(a => true);
             var books = await pointer.ToListAsync();
-            Console.WriteLine(books);
+
+            Console.WriteLine("---Books---");
+
+            foreach (var book in books)
+            {
+                Console.WriteLine(book);
+                Console.WriteLine("---");
+            }
 
             return books;
         }
